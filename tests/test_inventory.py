@@ -1,9 +1,8 @@
-from pages.base_page import BasePage
+from pages.inventory_page import InventoryPage
 
 
-class InventoryPage(BasePage):
+def test_inventory(logged_in_page):
 
-    inventory_title = ".title"
+    inventory = InventoryPage(logged_in_page)
 
-    def is_inventory_displayed(self):
-        return self.is_visible(self.inventory_title)
+    assert inventory.is_inventory_displayed()

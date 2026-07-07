@@ -1,26 +1,30 @@
-import os
-from datetime import datetime
 import pytest
+from playwright.sync_api import sync_playwright
+
+from pages.login_page import LoginPage
 
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+@pytest.fixture(scope="function")
+def page():
 
-    outcome = yield
-    report = outcome.get_result()
+    with sync_playwright() as p:
 
-    if report.when == "call" and report.failed:
+        browser = p.chromium.launch(headless=False)
 
-        page = item.funcargs.get("page")
+        page = browser.new_page()
 
-        if page:
+        yield page
 
-            os.makedirs("screenshots", exist_ok=True)
+        browser.close()
 
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-            screenshot = f"screenshots/{item.name}_{timestamp}.png"
+@pytest.fixture(scope="function")
+def logged_in_page(page):
 
-            page.screenshot(path=screenshot)
+    login = LoginPage(page)
 
-            print(f"\nScreenshot saved at {screenshot}")
+    login.open()
+
+    login.login("standard_user", "secret_sauce")
+
+    return page
