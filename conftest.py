@@ -1,3 +1,4 @@
+import os
 import pytest
 from playwright.sync_api import sync_playwright
 
@@ -6,10 +7,15 @@ from pages.login_page import LoginPage
 
 @pytest.fixture(scope="function")
 def page():
+    # Read HEADLESS environment variable
+    headless = os.getenv("HEADLESS", "False").lower() == "true"
 
     with sync_playwright() as p:
 
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(
+            headless=headless,
+            slow_mo=0 if headless else 500
+        )
 
         page = browser.new_page()
 
@@ -20,7 +26,6 @@ def page():
 
 @pytest.fixture(scope="function")
 def logged_in_page(page):
-
     login = LoginPage(page)
 
     login.open()

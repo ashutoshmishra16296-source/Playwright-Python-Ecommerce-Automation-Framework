@@ -1,25 +1,16 @@
 import logging
 import os
 
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
 
-def get_logger():
+LOG_FILE = os.path.join(LOG_DIR, "automation.log")
 
-    os.makedirs("logs", exist_ok=True)
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
 
-    logger = logging.getLogger("AutomationLogger")
-
-    if not logger.handlers:
-
-        logger.setLevel(logging.INFO)
-
-        file_handler = logging.FileHandler("logs/automation.log")
-
-        formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(message)s"
-        )
-
-        file_handler.setFormatter(formatter)
-
-        logger.addHandler(file_handler)
-
-    return logger
+logger = logging.getLogger(__name__)
